@@ -55,12 +55,21 @@ function appendPageLinks(list) {
   const prevDiv = document.querySelector('.page');
   const buttonsDiv = document.createElement('div');
   const buttonsUl = document.createElement('ul');
+
   buttonsDiv.classList.add('pagination');
   prevDiv.after(buttonsDiv);
   buttonsDiv.appendChild(buttonsUl);
 
-  for (let i = 1; i > numPageButtons; i += 1) {
-
+  for (let i = 1; i <= numPageButtons; i += 1) {
+    let buttonLi = document.createElement('li');
+    let buttonLink = document.createElement('a');
+    buttonsUl.appendChild(buttonLi);
+    if (i === 1) {
+      buttonLink.classList.add('active') 
+    }
+    buttonLink.href = '#';
+    buttonLink.textContent = i;
+    buttonLi.appendChild(buttonLink);
   }
 
 }
