@@ -32,6 +32,22 @@ const numItemsToShow = 10;
        "invoke" the function
 ***/
 
+function addSearchBar() {
+  const headerDiv = document.querySelector('div.page-header');
+  const searchDiv = document.createElement('div');
+  const searchInput = document.createElement('input');
+  const searchButton = document.createElement('button');
+  searchDiv.classList.add('student-search');
+  searchInput.placeholder = `Search for students...`;
+  searchButton.textContent = `Search`;
+
+  headerDiv.appendChild(searchDiv);
+  searchDiv.appendChild(searchInput);
+  searchDiv.appendChild(searchButton);
+}
+
+addSearchBar();
+
 function showPage(list, pageNum ) {
   let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
   let endIndex = pageNum * numItemsToShow;
