@@ -45,13 +45,16 @@ function showPage(list, pageNum ) {
   }
 }
 
+// show the first set of students
+showPage(studentList, 1);
+
 /***
    Create the `appendPageLinks function` to generate, append, and add
    functionality to the pagination buttons.
 ***/
 
 function appendPageLinks(list) {
-  const numPageButtons = parseInt(list.length / numItemsToShow);
+  const numPageButtons = parseInt(list.length / numItemsToShow) + 1;
   const prevDiv = document.querySelector('.page');
   const buttonsDiv = document.createElement('div');
   const buttonsUl = document.createElement('ul');
@@ -60,22 +63,33 @@ function appendPageLinks(list) {
   prevDiv.after(buttonsDiv);
   buttonsDiv.appendChild(buttonsUl);
 
+  // this code executes once for each required page button
+  // and creates a list item with a link for each button
   for (let i = 1; i <= numPageButtons; i += 1) {
     let buttonLi = document.createElement('li');
     let buttonLink = document.createElement('a');
     buttonsUl.appendChild(buttonLi);
     if (i === 1) {
-      buttonLink.classList.add('active') 
+      buttonLink.className = 'active';
     }
     buttonLink.href = '#';
     buttonLink.textContent = i;
     buttonLi.appendChild(buttonLink);
   }
 
+  let buttonList = document.querySelectorAll('div.pagination ul li a');
+
+  for (let i = 0; i < buttonList.length; i += 1 ) {
+    let pageButton = buttonList[i];
+    let pageNumber = i + 1;
+    pageButton.addEventListener('click', () => {
+      for (let j = 0; j < buttonList.length; j += 1) {
+        buttonList[j].classList.remove('active');
+      }
+      pageButton.classList.add('active');
+      showPage(studentList,pageNumber);
+    });
+  }
 }
 
 appendPageLinks(studentList);
-
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
