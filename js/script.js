@@ -48,6 +48,26 @@ function addSearchBar() {
 
 addSearchBar();
 
+const search = document.querySelector('div.student-search input');
+const submit = document.querySelector('div.student-search button');
+
+submit.addEventListener('click', (event) => {
+  event.preventDefault();
+  let searchButton = event.target;
+  let searchName = searchButton.previousElementSibling.value;
+  console.log(searchName);
+});
+
+search.addEventListener('keyup', (event) => {
+  let searchName = event.target.value;
+  console.log(searchName);
+});
+
+// function doSearch(searchInput, names) {
+//
+// }
+// doSearch("jekel". studentList);
+
 function showPage(list, pageNum ) {
   let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
   let endIndex = pageNum * numItemsToShow;
