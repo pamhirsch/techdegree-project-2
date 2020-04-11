@@ -6,36 +6,22 @@ FSJS project 2 - List Filter and Pagination
 /***
    Add your global variables that store the DOM elements you will
    need to reference and/or manipulate.
-
-   But be mindful of which variables should be global and which
-   should be locally scoped to one of the two main functions you're
-   going to create. A good general rule of thumb is if the variable
-   will only be used inside of a function, then it can be locally
-   scoped to that function.
 ***/
 
 const studentList = document.getElementsByClassName('student-item');
 const numItemsToShow = 10;
 
 /***
-   Create the `showPage` function to hide all of the items in the
-   list except for the ten you want to show.
-
-   Pro Tips:
-     - Keep in mind that with a list of 54 students, the last page
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when
-       you initially define the function, and it acts as a variable
-       or a placeholder to represent the actual function `argument`
-       that will be passed into the parens later when you call or
-       "invoke" the function
+   The function addSearchBar creates new div, input and button
+   elements and then add them to the index.html file directly
+   under the div with a class of "page-header" (at the top of
+   the page.)
 ***/
 
 function addSearchBar() {
   const headerDiv = document.querySelector('div.page-header');
   const searchDiv = document.createElement('div');
-  const searchInput = document.createElement('input');
+  let searchInput = document.createElement('input');
   const searchButton = document.createElement('button');
   searchDiv.classList.add('student-search');
   searchInput.placeholder = `Search for students...`;
@@ -46,27 +32,8 @@ function addSearchBar() {
   searchDiv.appendChild(searchButton);
 }
 
+// adds the new Search Bar at the top of the page
 addSearchBar();
-
-const search = document.querySelector('div.student-search input');
-const submit = document.querySelector('div.student-search button');
-
-submit.addEventListener('click', (event) => {
-  event.preventDefault();
-  let searchButton = event.target;
-  let searchName = searchButton.previousElementSibling.value;
-  console.log(searchName);
-});
-
-search.addEventListener('keyup', (event) => {
-  let searchName = event.target.value;
-  console.log(searchName);
-});
-
-// function doSearch(searchInput, names) {
-//
-// }
-// doSearch("jekel". studentList);
 
 function showPage(list, pageNum ) {
   let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
@@ -90,7 +57,7 @@ showPage(studentList, 1);
 ***/
 
 function appendPageLinks(list) {
-  const numPageButtons = parseInt(list.length / numItemsToShow) + 1;
+  const numPageButtons = Math.ceil(list.length / numItemsToShow);
   const prevDiv = document.querySelector('.page');
   const buttonsDiv = document.createElement('div');
   const buttonsUl = document.createElement('ul');
@@ -118,14 +85,63 @@ function appendPageLinks(list) {
   for (let i = 0; i < buttonList.length; i += 1 ) {
     let pageButton = buttonList[i];
     let pageNumber = i + 1;
+
     pageButton.addEventListener('click', () => {
       for (let j = 0; j < buttonList.length; j += 1) {
         buttonList[j].classList.remove('active');
       }
       pageButton.classList.add('active');
-      showPage(studentList,pageNumber);
+      showPage(list,pageNumber);
     });
   }
 }
 
 appendPageLinks(studentList);
+
+// create event location for the search button
+const submit = document.querySelector('div.student-search button');
+
+/***
+   Listens for the click of the search button, stores the value
+   entered for searching and calls the doSearch function.
+***/
+submit.addEventListener('click', (event) => {
+  event.preventDefault();
+  let searchButton = event.target;
+  let searchName = searchButton.previousElementSibling.value;
+  doSearch(searchName, studentList);
+});
+
+// create event location for the search input area
+
+const search = document.querySelector('div.student-search input');
+
+/***
+   Listens for search data being entered in the input area, stores
+   the input info and calls the doSearch funtion.
+***/
+// search.addEventListener('keyup', (event) => {
+//   let searchName = event.target.value;
+//   console.log(searchName);
+// });
+
+function doSearch(searchInput, names) {
+  let matchingStudents = [];
+  for (let i = 0; i < names.length; i += 1) {
+    studentInfo = names[i];
+    studentName = studentInfo.querySelector('h3').textContent.toLowerCase();
+    searchInputName = searchInput.toLowerCase();
+    if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
+      matchingStudents.push(studentInfo);
+    } else if (searchInput.length != 0) {
+        let searchInput = document.querySelector('input');
+        searchInput.value = `No match found...`;
+    }
+  }
+
+  let divPagination = document.querySelector('div.pagination');
+  divPagination.remove();
+
+  // showPage(matchingStudents, 1);
+  appendPageLinks(matchingStudents);
+}
