@@ -131,17 +131,19 @@ function doSearch(searchInput, names) {
     studentInfo = names[i];
     studentName = studentInfo.querySelector('h3').textContent.toLowerCase();
     searchInputName = searchInput.toLowerCase();
-    if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
-      matchingStudents.push(studentInfo);
-    } else if (searchInput.length != 0) {
-        let searchInput = document.querySelector('input');
-        searchInput.value = `No match found...`;
+      if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
+        matchingStudents.push(studentInfo);
+      }
     }
-  }
 
+    if (matchingStudents.length < 1) {
+      let noMatchMessage = document.querySelector('input');
+      noMatchMessage.value = "No match found..."
+    }
+    
   let divPagination = document.querySelector('div.pagination');
   divPagination.remove();
 
-  // showPage(matchingStudents, 1);
+  showPage(matchingStudents, 1);
   appendPageLinks(matchingStudents);
 }
