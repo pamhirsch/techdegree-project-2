@@ -4,8 +4,8 @@ FSJS project 2 - List Filter and Pagination
 ******************************************/
 
 /***
-   Add your global variables that store the DOM elements you will
-   need to reference and/or manipulate.
+   Global variables that describe the initial student List
+   and the number of items to show on a page.
 ***/
 
 const studentList = document.getElementsByClassName('student-item');
@@ -35,6 +35,15 @@ function addSearchBar() {
 // adds the new Search Bar at the top of the page
 addSearchBar();
 
+/***
+   The function showPage accepts a list of students and
+   the number of the specific page being displayed. These
+   are used to calculate the starting and ending index. It
+   cycles through the list of students and adds a CSS style
+   of either "block" or "display" depending on the index
+   of the list item.
+***/
+
 function showPage(list, pageNum ) {
   let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
   let endIndex = pageNum * numItemsToShow;
@@ -52,8 +61,14 @@ function showPage(list, pageNum ) {
 showPage(studentList, 1);
 
 /***
-   Create the `appendPageLinks function` to generate, append, and add
-   functionality to the pagination buttons.
+   The appendPageLinks function calculates the number of number
+   of pages needed by dividing the length of the student list
+   by the number of items to show (set at the beginning in a global
+   variable.) It then creates button elements based on the number
+   of pages to show and then adds a listener event to each button
+   to affect the styling of the button - either active or not. It
+   also calls the showPage function, passing the student list and
+   the page number.
 ***/
 
 function appendPageLinks(list) {
@@ -96,7 +111,14 @@ function appendPageLinks(list) {
   }
 }
 
+// calls the appendPageLinks to display the pagination buttons
 appendPageLinks(studentList);
+
+/***
+   The following code handles all of the search functionality,
+   other than the display of the search input field and button
+   which is done at the beginging execution of this program.
+***/
 
 // create event location for the search button
 const submit = document.querySelector('div.student-search button');
@@ -140,7 +162,7 @@ function doSearch(searchInput, names) {
       let noMatchMessage = document.querySelector('input');
       noMatchMessage.value = "No match found..."
     }
-    
+
   let divPagination = document.querySelector('div.pagination');
   divPagination.remove();
 
