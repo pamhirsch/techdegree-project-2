@@ -57,6 +57,31 @@ function showPage(list, pageNum ) {
   }
 }
 
+/***
+   The function showMatchingStudents accepts a list of students and
+   the number of the specific page being displayed. These
+   are used to calculate the starting and ending index. It
+   cycles through the list of students and adds a new list item
+   for each student and a CSS style of either "block" or "display"
+   depending on the index of the list item.
+***/
+
+function showMatchingStudents(list, pageNum ) {
+  let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
+  let endIndex = pageNum * numItemsToShow;
+
+  let studentUl = document.querySelector('ul.student-list');
+  for (let i = 0; i < list.length; i += 1) {
+    if (i >= startIndex && i < endIndex) {
+      studentUl.appendChild(list[i]);
+      list[i].style.display = 'block';
+    } else {
+      studentUl.appendChild(list[i]);
+      list[i].style.display = 'none';
+    }
+  }
+}
+
 // show the first set of students
 showPage(studentList, 1);
 
@@ -71,11 +96,11 @@ showPage(studentList, 1);
    the page number.
 ***/
 
-function appendPageLinks(list) {
-  const numPageButtons = Math.ceil(list.length / numItemsToShow);
-  const prevDiv = document.querySelector('.page');
-  const buttonsDiv = document.createElement('div');
-  const buttonsUl = document.createElement('ul');
+function appendPageLinks(list, instance) {
+  let numPageButtons = Math.ceil(list.length / numItemsToShow);
+  let prevDiv = document.querySelector('.page');
+  let buttonsDiv = document.createElement('div');
+  let buttonsUl = document.createElement('ul');
 
   buttonsDiv.classList.add('pagination');
   prevDiv.after(buttonsDiv);
@@ -106,13 +131,20 @@ function appendPageLinks(list) {
         buttonList[j].classList.remove('active');
       }
       pageButton.classList.add('active');
-      showPage(list,pageNumber);
+
+// calls a different function to show the students
+// depending on whether it is the full list or based on a search
+      if (instance === 'search-results') {
+        showMatchingStudents(list,pageNumber);
+      } else {
+        showPage(list,pageNumber);
+      }
     });
   }
 }
 
 // calls the appendPageLinks to display the pagination buttons
-appendPageLinks(studentList);
+appendPageLinks(studentList, "initial");
 
 /***
    The following code handles all of the search functionality,
@@ -134,38 +166,34 @@ submit.addEventListener('click', (event) => {
   doSearch(searchName, studentList);
 });
 
-// create event location for the search input area
-
-const search = document.querySelector('div.student-search input');
-
-/***
-   Listens for search data being entered in the input area, stores
-   the input info and calls the doSearch funtion.
-***/
-// search.addEventListener('keyup', (event) => {
-//   let searchName = event.target.value;
-//   console.log(searchName);
-// });
-
 function doSearch(searchInput, names) {
   let matchingStudents = [];
   for (let i = 0; i < names.length; i += 1) {
     studentInfo = names[i];
     studentName = studentInfo.querySelector('h3').textContent.toLowerCase();
     searchInputName = searchInput.toLowerCase();
-      if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
-        matchingStudents.push(studentInfo);
-      }
+    if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
+      matchingStudents.push(studentInfo);
     }
+  }
 
-    if (matchingStudents.length < 1) {
-      let noMatchMessage = document.querySelector('input');
-      noMatchMessage.value = "No match found..."
-    }
+// outputs a message if there are no matching students
+  if (matchingStudents.length < 1) {
+    let noMatchMessage = document.querySelector('input');
+    noMatchMessage.value = "No match found...";
+    return;
+  }
 
+// removes existing pagination
   let divPagination = document.querySelector('div.pagination');
   divPagination.remove();
+  hideStudentList(studentList);
+  showMatchingStudents(matchingStudents, 1);
+  appendPageLinks(matchingStudents, 'search-results');
+}
 
-  showPage(matchingStudents, 1);
-  appendPageLinks(matchingStudents);
+function hideStudentList(list) {
+  for (let i = 0; i < list.length; i += 1) {
+    list[i].style.display = 'none';
+  }
 }
