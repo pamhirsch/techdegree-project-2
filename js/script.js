@@ -98,6 +98,11 @@ showPage(studentList, 1);
 
 function appendPageLinks(list, instance) {
   let numPageButtons = Math.ceil(list.length / numItemsToShow);
+
+  if (numPageButtons <= 1) {
+    return;
+  }
+
   let prevDiv = document.querySelector('.page');
   let buttonsDiv = document.createElement('div');
   let buttonsUl = document.createElement('ul');
@@ -166,6 +171,19 @@ submit.addEventListener('click', (event) => {
   doSearch(searchName, studentList);
 });
 
+// create event location for the submit listener
+const search = document.querySelector('div.student-search input');
+
+/***
+   Listens for any keyed input in the search input field, stores the value
+   entered for searching and calls the doSearch function.
+***/
+
+search.addEventListener('keyup', (event) => {
+  let searchName = event.target.value;
+  doSearch(searchName, studentList);
+});
+
 function doSearch(searchInput, names) {
   let matchingStudents = [];
   for (let i = 0; i < names.length; i += 1) {
@@ -177,17 +195,21 @@ function doSearch(searchInput, names) {
     }
   }
 
-// outputs a message if there are no matching students
-  if (matchingStudents.length < 1) {
-    let noMatchMessage = document.querySelector('input');
-    noMatchMessage.value = "No match found...";
-    return;
-  }
-
 // removes existing pagination
   let divPagination = document.querySelector('div.pagination');
   divPagination.remove();
   hideStudentList(studentList);
+
+// outputs a message if there are no matching students
+  if (matchingStudents.length < 1) {
+    let displayNoMatchHeader = document.querySelector('ul.student-list');
+    console.log(displayNoMatchHeader);
+    let noMatchMessage = document.createElement('li');
+    noMatchMessage.innerHTML = `Sorry! No match was found on ${searchInput}.`;
+    displayNoMatchHeader.appendChild(noMatchMessage);
+    return;
+  }
+
   showMatchingStudents(matchingStudents, 1);
   appendPageLinks(matchingStudents, 'search-results');
 }
