@@ -98,11 +98,6 @@ showPage(studentList, 1);
 
 function appendPageLinks(list, instance) {
   let numPageButtons = Math.ceil(list.length / numItemsToShow);
-
-  if (numPageButtons <= 1) {
-    return;
-  }
-
   let prevDiv = document.querySelector('.page');
   let buttonsDiv = document.createElement('div');
   let buttonsUl = document.createElement('ul');
@@ -110,6 +105,11 @@ function appendPageLinks(list, instance) {
   buttonsDiv.classList.add('pagination');
   prevDiv.after(buttonsDiv);
   buttonsDiv.appendChild(buttonsUl);
+
+
+  if (numPageButtons <= 1) {
+    return;
+  }
 
   // this code executes once for each required page button
   // and creates a list item with a link for each button
@@ -197,13 +197,14 @@ function doSearch(searchInput, names) {
 
 // removes existing pagination
   let divPagination = document.querySelector('div.pagination');
-  divPagination.remove();
-  hideStudentList(studentList);
+  if (divPagination != null) {
+    divPagination.remove();
+    hideStudentList(studentList);
+  }
 
 // outputs a message if there are no matching students
   if (matchingStudents.length < 1) {
     let displayNoMatchHeader = document.querySelector('ul.student-list');
-    console.log(displayNoMatchHeader);
     let noMatchMessage = document.createElement('li');
     noMatchMessage.innerHTML = `Sorry! No match was found on ${searchInput}.`;
     displayNoMatchHeader.appendChild(noMatchMessage);
