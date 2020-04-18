@@ -168,6 +168,13 @@ submit.addEventListener('click', (event) => {
   event.preventDefault();
   let searchButton = event.target;
   let searchName = searchButton.previousElementSibling.value;
+  if (searchName == '') {
+    let prevNode = document.querySelector('div.student-search');
+    let newNode = document.createElement('h3');
+    newNode.innerHTML = `Please enter an actual value`;
+    prevNode.appendChild(newNode);
+    return;
+  }
   doSearch(searchName, studentList);
 });
 
@@ -206,7 +213,7 @@ function doSearch(searchInput, names) {
   if (matchingStudents.length < 1) {
     let displayNoMatchHeader = document.querySelector('ul.student-list');
     let noMatchMessage = document.createElement('li');
-    noMatchMessage.innerHTML = `Sorry! No match was found on ${searchInput}.`;
+    noMatchMessage.innerHTML = `Sorry! No match was found.`;
     displayNoMatchHeader.appendChild(noMatchMessage);
     return;
   }
