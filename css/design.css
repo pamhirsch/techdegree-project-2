@@ -118,8 +118,6 @@ body{
       color: #fff;
     }
 
-.student-search h3 {
+.error-message h3 {
   color: red;
-  margin-top: 15px;
-  text-align: right;
 }

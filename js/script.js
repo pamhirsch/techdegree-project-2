@@ -168,13 +168,6 @@ submit.addEventListener('click', (event) => {
   event.preventDefault();
   let searchButton = event.target;
   let searchName = searchButton.previousElementSibling.value;
-  if (searchName == '') {
-    let prevNode = document.querySelector('div.student-search');
-    let newNode = document.createElement('h3');
-    newNode.innerHTML = `Please enter an actual value`;
-    prevNode.appendChild(newNode);
-    return;
-  }
   doSearch(searchName, studentList);
 });
 
@@ -187,6 +180,10 @@ const search = document.querySelector('div.student-search input');
 ***/
 
 search.addEventListener('keyup', (event) => {
+  let errMsgCheck = document.querySelector('div.error-message');
+  if (errMsgCheck != null) {
+    errMsgCheck.remove();
+  }
   let searchName = event.target.value;
   doSearch(searchName, studentList);
 });
@@ -211,10 +208,13 @@ function doSearch(searchInput, names) {
 
 // outputs a message if there are no matching students
   if (matchingStudents.length < 1) {
-    let displayNoMatchHeader = document.querySelector('ul.student-list');
-    let noMatchMessage = document.createElement('li');
-    noMatchMessage.innerHTML = `Sorry! No match was found.`;
-    displayNoMatchHeader.appendChild(noMatchMessage);
+    let prevDiv = document.querySelector('div.page-header');
+    let noMatchDiv = document.createElement('div');
+    let noMatchMsg = document.createElement('h3');
+    noMatchDiv.classList.add('error-message');
+    prevDiv.insertAdjacentElement('afterend', noMatchDiv);
+    noMatchMsg.innerHTML = `Sorry! No match was found.`;
+    noMatchDiv.appendChild(noMatchMsg);
     return;
   }
 
