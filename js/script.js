@@ -21,7 +21,7 @@ const numItemsToShow = 10;
 function addSearchBar() {
   const headerDiv = document.querySelector('div.page-header');
   const searchDiv = document.createElement('div');
-  let searchInput = document.createElement('input');
+  const searchInput = document.createElement('input');
   const searchButton = document.createElement('button');
   searchDiv.classList.add('student-search');
   searchInput.placeholder = `Search for students...`;
@@ -45,8 +45,8 @@ addSearchBar();
 ***/
 
 function showPage(list, pageNum ) {
-  let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
-  let endIndex = pageNum * numItemsToShow;
+  const startIndex = (pageNum * numItemsToShow) - numItemsToShow;
+  const endIndex = pageNum * numItemsToShow;
 
   for (let i = 0; i < list.length; i += 1) {
     if (i >= startIndex && i < endIndex) {
@@ -67,16 +67,17 @@ function showPage(list, pageNum ) {
 ***/
 
 function showMatchingStudents(list, pageNum ) {
-  let startIndex = (pageNum * numItemsToShow) - numItemsToShow;
-  let endIndex = pageNum * numItemsToShow;
+  const startIndex = (pageNum * numItemsToShow) - numItemsToShow;
+  const endIndex = pageNum * numItemsToShow;
+  const studentUl = document.querySelector('ul.student-list');
+  let nextStudentUl = studentUl.createElement('ul');
 
-  let studentUl = document.querySelector('ul.student-list');
   for (let i = 0; i < list.length; i += 1) {
     if (i >= startIndex && i < endIndex) {
-      studentUl.appendChild(list[i]);
+      nextStudentUl.appendChild(list[i]);
       list[i].style.display = 'block';
     } else {
-      studentUl.appendChild(list[i]);
+      nextStudentUl.appendChild(list[i]);
       list[i].style.display = 'none';
     }
   }
@@ -97,10 +98,10 @@ showPage(studentList, 1);
 ***/
 
 function appendPageLinks(list, instance) {
-  let numPageButtons = Math.ceil(list.length / numItemsToShow);
-  let prevDiv = document.querySelector('.page');
-  let buttonsDiv = document.createElement('div');
-  let buttonsUl = document.createElement('ul');
+  const numPageButtons = Math.ceil(list.length / numItemsToShow);
+  const prevDiv = document.querySelector('.page');
+  const buttonsDiv = document.createElement('div');
+  const buttonsUl = document.createElement('ul');
 
   buttonsDiv.classList.add('pagination');
   prevDiv.after(buttonsDiv);
@@ -180,11 +181,27 @@ const search = document.querySelector('div.student-search input');
 ***/
 
 search.addEventListener('keyup', (event) => {
-  let errMsgCheck = document.querySelector('div.error-message');
-  if (errMsgCheck != null) {
-    errMsgCheck.remove();
+  const errMsgCheck = document.querySelectorAll('div.error-message');
+  for (let i = 0; i < errMsgCheck.length; i += 1) {
+    if (errMsgCheck[i] != null) {
+      errMsgCheck[i].remove();
+    }
   }
+
   let searchName = event.target.value;
+  if (searchName.length === 0) {
+    console.log("Yes!");
+    // removes existing pagination
+      const divPaginationList = document.querySelectorAll('div.pagination');
+      if (divPaginationList != null) {
+        for (let y = 1; y < divPaginationList.length; y += 1) {
+          divPaginationList[y].remove();
+        }
+      }
+    showPage(studentList, 1);
+    appendPageLinks(studentList, 'initial');
+    return;
+  }
   doSearch(searchName, studentList);
 });
 
@@ -200,7 +217,7 @@ function doSearch(searchInput, names) {
   }
 
 // removes existing pagination
-  let divPagination = document.querySelector('div.pagination');
+  const divPagination = document.querySelector('div.pagination');
   if (divPagination != null) {
     divPagination.remove();
     hideStudentList(studentList);
@@ -208,11 +225,11 @@ function doSearch(searchInput, names) {
 
 // outputs a message if there are no matching students
   if (matchingStudents.length < 1) {
-    let prevDiv = document.querySelector('div.page-header');
-    let noMatchDiv = document.createElement('div');
-    let noMatchMsg = document.createElement('h3');
+    const prevHeaderDiv = document.querySelector('div.page-header');
+    const noMatchDiv = document.createElement('div');
+    const noMatchMsg = document.createElement('h3');
     noMatchDiv.classList.add('error-message');
-    prevDiv.insertAdjacentElement('afterend', noMatchDiv);
+    prevHeaderDiv.insertAdjacentElement('afterend', noMatchDiv);
     noMatchMsg.innerHTML = `Sorry! No match was found.`;
     noMatchDiv.appendChild(noMatchMsg);
     return;
