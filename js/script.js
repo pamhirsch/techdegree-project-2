@@ -58,27 +58,25 @@ function showPage(list, pageNum ) {
 }
 
 /***
-   The function showMatchingStudents accepts a list of students and
-   the number of the specific page being displayed. These
-   are used to calculate the starting and ending index. It
-   cycles through the list of students and adds a new list item
-   for each student and a CSS style of either "block" or "display"
-   depending on the index of the list item.
+   The function showMatchingStudents accepts a list of matching student
+   names, the full student list, and the number of the specific page
+   being displayed. These are used to calculate the starting and ending index. It
+   cycles through the list of students and adds a CSS style of "block" if
+   there is a match.
 ***/
 
-function showMatchingStudents(list, pageNum ) {
+function showMatchingStudents(nameList, studentList, pageNum ) {
   const startIndex = (pageNum * numItemsToShow) - numItemsToShow;
   const endIndex = pageNum * numItemsToShow;
-  const studentUl = document.querySelector('ul.student-list');
-  let nextStudentUl = studentUl.createElement('ul');
-
-  for (let i = 0; i < list.length; i += 1) {
-    if (i >= startIndex && i < endIndex) {
-      nextStudentUl.appendChild(list[i]);
-      list[i].style.display = 'block';
-    } else {
-      nextStudentUl.appendChild(list[i]);
-      list[i].style.display = 'none';
+  hideStudentList(studentList);
+  for (let i = 0 + startIndex; i < nameList.length && i < endIndex; i += 1) {
+    let noMatchFound = true;
+    for (let y = 0; noMatchFound; y += 1) {
+      let studentName = studentList[y].querySelector('h3').textContent.toLowerCase();
+      if ( studentName === nameList[i]) {
+        studentList[y].style.display = 'block';
+        noMatchFound = false;
+      }
     }
   }
 }
@@ -103,14 +101,14 @@ function appendPageLinks(list, instance) {
   const buttonsDiv = document.createElement('div');
   const buttonsUl = document.createElement('ul');
 
-  buttonsDiv.classList.add('pagination');
-  prevDiv.after(buttonsDiv);
-  buttonsDiv.appendChild(buttonsUl);
-
-
+  // don't show any pagination of the number of page buttons is 1 or less
   if (numPageButtons <= 1) {
     return;
   }
+
+  buttonsDiv.classList.add('pagination');
+  prevDiv.after(buttonsDiv);
+  buttonsDiv.appendChild(buttonsUl);
 
   // this code executes once for each required page button
   // and creates a list item with a link for each button
@@ -138,12 +136,12 @@ function appendPageLinks(list, instance) {
       }
       pageButton.classList.add('active');
 
-// calls a different function to show the students
-// depending on whether it is the full list or based on a search
+    // calls a different function to show the students
+    // depending on whether it is the full list or based on a search
       if (instance === 'search-results') {
-        showMatchingStudents(list,pageNumber);
+        showMatchingStudents(list, studentList, pageNumber);
       } else {
-        showPage(list,pageNumber);
+        showPage(list, pageNumber);
       }
     });
   }
@@ -190,14 +188,14 @@ search.addEventListener('keyup', (event) => {
 
   let searchName = event.target.value;
   if (searchName.length === 0) {
-    console.log("Yes!");
     // removes existing pagination
-      const divPaginationList = document.querySelectorAll('div.pagination');
-      if (divPaginationList != null) {
-        for (let y = 1; y < divPaginationList.length; y += 1) {
-          divPaginationList[y].remove();
-        }
+    const divPaginationList = document.querySelectorAll('div.pagination');
+    if (divPaginationList.length != 0) {
+      for (let y = 0; y < divPaginationList.length; y += 1) {
+        divPaginationList[y].remove();
       }
+    }
+    // if there is nothing in the search input field display the first list
     showPage(studentList, 1);
     appendPageLinks(studentList, 'initial');
     return;
@@ -206,36 +204,38 @@ search.addEventListener('keyup', (event) => {
 });
 
 function doSearch(searchInput, names) {
-  let matchingStudents = [];
+  const matchingStudents = [];
   for (let i = 0; i < names.length; i += 1) {
-    studentInfo = names[i];
-    studentName = studentInfo.querySelector('h3').textContent.toLowerCase();
-    searchInputName = searchInput.toLowerCase();
+    let studentInfo = names[i];
+    let studentName = studentInfo.querySelector('h3').textContent.toLowerCase();
+    let searchInputName = searchInput.toLowerCase();
     if (searchInput.length != 0 && studentName.includes(searchInputName) ) {
-      matchingStudents.push(studentInfo);
+      let matchingStudentInfo = studentInfo;
+      matchingStudents.push(studentName);
     }
   }
 
-// removes existing pagination
-  const divPagination = document.querySelector('div.pagination');
-  if (divPagination != null) {
-    divPagination.remove();
+  if ( matchingStudents.length > 0) {
+    // removes existing pagination
+    const divPagination = document.querySelector('div.pagination');
+    if (divPagination != null) {
+      divPagination.remove();
+    }
+    // hide all students
     hideStudentList(studentList);
+  } else {
+      const prevHeaderDiv = document.querySelector('div.page-header');
+      const noMatchDiv = document.createElement('div');
+      const noMatchMsg = document.createElement('h3');
+      noMatchDiv.classList.add('error-message');
+      prevHeaderDiv.insertAdjacentElement('afterend', noMatchDiv);
+      noMatchMsg.innerHTML = `Sorry! No match was found.`;
+      noMatchDiv.appendChild(noMatchMsg);
+      hideStudentList(studentList);
+      return;
   }
 
-// outputs a message if there are no matching students
-  if (matchingStudents.length < 1) {
-    const prevHeaderDiv = document.querySelector('div.page-header');
-    const noMatchDiv = document.createElement('div');
-    const noMatchMsg = document.createElement('h3');
-    noMatchDiv.classList.add('error-message');
-    prevHeaderDiv.insertAdjacentElement('afterend', noMatchDiv);
-    noMatchMsg.innerHTML = `Sorry! No match was found.`;
-    noMatchDiv.appendChild(noMatchMsg);
-    return;
-  }
-
-  showMatchingStudents(matchingStudents, 1);
+  showMatchingStudents(matchingStudents, studentList, 1);
   appendPageLinks(matchingStudents, 'search-results');
 }
 
